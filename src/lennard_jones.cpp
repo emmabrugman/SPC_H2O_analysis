@@ -18,7 +18,7 @@ double LennardJones::calculateDistance(int first_atom_index, int second_atom_ind
 }
 
 double LennardJones::calculateR6Term(double r) const {
-    return std::pow(SIGMA_AU / r, 6);
+    return std::pow(SIGMA_O / r, 6);
 }
 
 double LennardJones::calculateR12Term(double r6_term) const {
@@ -28,7 +28,7 @@ double LennardJones::calculateR12Term(double r6_term) const {
 double LennardJones::calculateLJ(double r_ij) const {
     double r6_term = calculateR6Term(r_ij);
     double r12_term = calculateR12Term(r6_term);
-    return EPSILON_AU * (r12_term - 2 * r6_term);
+    return EPSILON_O * (r12_term - 2 * r6_term);
 }
 
 double LennardJones::getLJEnergy() const {
