@@ -3,8 +3,8 @@
 #include <cmath>
 
 // LJ constants
-const double LennardJones::SIGMA_AU = 3.166; // Å
-const double LennardJones::EPSILON_AU = 0.650; // kJ/mol
+const double LennardJones::SIGMA_O = 3.166; // Å
+const double LennardJones::EPSILON_O = 0.650; // kJ/mol
 
 // Constructor: initialize positions and atomic numbers
 LennardJones::LennardJones(const arma::mat& pos, const std::vector<int>& a)
