@@ -1,4 +1,4 @@
-#include "lennard_jones.h"
+#include "spc.h"
 #include <stdexcept>
 #include <cmath>
 

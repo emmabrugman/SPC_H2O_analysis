@@ -11,8 +11,8 @@ private:
 
 public:
     // LJ Constants
-    static const double SIGMA_AU; // 3.166 Å
-    static const double EPSILON_AU; // 0.650 kJ/mol
+    static const double SIGMA_O; // 3.166 Å
+    static const double EPSILON_O; // 0.650 kJ/mol
 
     // Constructor: initialize positions and atomic numbers
     LennardJones(const arma::mat& pos, const std::vector<int>& a);
