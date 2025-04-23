@@ -1,5 +1,5 @@
 #include "build_system.h"
-#include "lennard_jones.h"
+#include "spc.h"
 #include <iostream>
 #include <iomanip>
 #include <string>
