@@ -1,1 +1,1 @@
-add_executable(spc main.cpp build_system.cpp lennard_jones.cpp)
+add_executable(spc main.cpp build_system.cpp spc.cpp)
