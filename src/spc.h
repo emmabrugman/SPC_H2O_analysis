@@ -4,25 +4,37 @@
 #include <vector>
 #include <cmath>
 
-class LennardJones {
+class SPC {
 private:
     arma::mat positions; // Matrix of atomic positions
     std::vector<int> A; // Vector of atomic numbers
+    std::vector<double> charges; // Vector of partial charges
 
 public:
-    // LJ Constants
+    // Constants
     static const double SIGMA_O; // 3.166 Å
     static const double EPSILON_O; // 0.650 kJ/mol
+    static const double COULOMB_CONSTANT; // 332.0637 kJ·Å/(mol·e²)
 
-    // Constructor: initialize positions and atomic numbers
-    LennardJones(const arma::mat& pos, const std::vector<int>& a);
+    // Constructor: initialize positions, atomic numbers, and charges
+    SPC(const arma::mat& pos, const std::vector<int>& a);
+
+    // SPC partial charge based on atomic number
+    double getPartialCharge(int atomic_number);
 
     // Compute the total LJ energy
     double getLJEnergy() const;
 
+    // Compute the total Coulomb energy
+    double getCoulombEnergy() const;
+
+    // Compute the total energy (LJ + Coulomb)
+    double getTotalEnergy() const;
+
     // Getters
     const arma::mat& getPositions() const;
     const std::vector<int>& getAtomicNumbers() const;
+    const std::vector<double>& getCharges() const;
 
     // Calculates (sigma/r)^6
     double calculateR6Term(double r) const;
@@ -31,7 +43,7 @@ public:
     double calculateR12Term(double r6_term) const;
 
     // Calculates Euclidean distance between two atoms
-    double calculateDistance(int first_atom_index, int second_atom_index) const;
+    double calculateDistance(size_t first_atom_index, size_t second_atom_index) const;
 
     // Calculates LJ potential for a given distance
     double calculateLJ(double r_ij) const;
