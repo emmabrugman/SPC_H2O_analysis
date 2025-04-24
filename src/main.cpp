@@ -23,14 +23,18 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    // Initialize Lennard-Jones calculator
-    LennardJones lj_calculator(atomic_system.getPositions(), atomic_system.getAtomicNumbers());
+    // Initialize SPC calculator
+    SPC spc_calculator(atomic_system.getPositions(), atomic_system.getAtomicNumbers());
 
-    // Compute and display LJ energy
-    double lj_energy = lj_calculator.getLJEnergy();
+    // Compute and display energies
+    double lj_energy = spc_calculator.getLJEnergy();
+    double coulomb_energy = spc_calculator.getCoulombEnergy();
+    double total_energy = spc_calculator.getTotalEnergy();
 
     std::cout << std::fixed << std::setprecision(5);
     std::cout << "Lennard-Jones Energy: " << lj_energy << " kJ/mol" << std::endl;
+    std::cout << "Coulomb Energy: " << coulomb_energy << " kJ/mol" << std::endl;
+    std::cout << "Total Energy (LJ + Coulomb): " << total_energy << " kJ/mol" << std::endl;
 
     return 0;
 }
