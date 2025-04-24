@@ -18,7 +18,7 @@ SPC::SPC(const arma::mat& pos, const std::vector<int>& a)
 
 // SPC partial charge based on atomic number
 double SPC::getPartialCharge(int atomic_number) {
-    if (atomic_number == 6) return -0.82; // Oxygen
+    if (atomic_number == 8) return -0.82; // Oxygen
     if (atomic_number == 1) return 0.41;  // Hydrogen
     throw std::runtime_error("Unknown atomic number: " + std::to_string(atomic_number));
 }
@@ -48,8 +48,8 @@ double SPC::getLJEnergy() const {
     double lj_energy = 0.0;
     for (size_t atom1_idx = 0; atom1_idx < A.size(); ++atom1_idx) {
         for (size_t atom2_idx = atom1_idx + 1; atom2_idx < A.size(); ++atom2_idx) {
-            // Apply LJ only if both atoms are oxygen (A=6)
-            if (A[atom1_idx] == 6 && A[atom2_idx] == 6) {
+            // Apply LJ only if both atoms are oxygen (A=8)
+            if (A[atom1_idx] == 8 && A[atom2_idx] == 8) {
                 double r_ij = calculateDistance(atom1_idx, atom2_idx);
                 lj_energy += calculateLJ(r_ij);
             }
