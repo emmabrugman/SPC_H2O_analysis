@@ -1,5 +1,6 @@
 #include "build_system.h"
 #include "spc.h"
+#include "forces.h"
 #include <iostream>
 #include <iomanip>
 #include <string>
@@ -32,9 +33,19 @@ int main(int argc, char** argv) {
     double total_energy = spc_calculator.getTotalEnergy();
 
     std::cout << std::fixed << std::setprecision(5);
+    std::cout << " \n======== Initial Energy Calculations -======== \n" << std::endl;
     std::cout << "Lennard-Jones Energy: " << lj_energy << " kJ/mol" << std::endl;
     std::cout << "Coulomb Energy: " << coulomb_energy << " kJ/mol" << std::endl;
     std::cout << "Total Energy (LJ + Coulomb): " << total_energy << " kJ/mol" << std::endl;
 
-    return 0;
+    CalculateForce force_calculator(spc_calculator, atomic_system.getNumAtoms());
+    arma::mat central_forces;
+    double h = 1e-5; // Small displacement for numerical derivative
+    force_calculator.calculateCentralDifferenceForces(h, central_forces);
+    
+    // Output forces
+    std::cout << "\nCentral Difference Forces (kJ/(mol·Å)):\n";
+    std::cout << central_forces << std::endl;
+
+return 0;
 }
