@@ -3,35 +3,39 @@
 #include <cmath>
 
 // LJ constants
-const double LennardJones::SIGMA_O = 3.166; // Å
-const double LennardJones::EPSILON_O = 0.650; // kJ/mol
+const double SPC::SIGMA_O = 3.166; // Å
+const double SPC::EPSILON_O = 0.650; // kJ/mol
 
 // Constructor: initialize positions and atomic numbers
-LennardJones::LennardJones(const arma::mat& pos, const std::vector<int>& a)
+SPC::SPC(const arma::mat& pos, const std::vector<int>& a)
     : positions(pos), A(a) {
+    charges.resize(A.size());
+    for (size_t i = 0; i < A.size(); ++i) {
+        charges[i] = getPartialCharge(A[i]);
+    }
 }
 
 // Compute Euclidean distance between two atoms
-double LennardJones::calculateDistance(int first_atom_index, int second_atom_index) const {
+double SPC::calculateDistance(int first_atom_index, int second_atom_index) const {
     arma::vec diff = positions.col(first_atom_index) - positions.col(second_atom_index);
     return arma::norm(diff, 2);
 }
 
-double LennardJones::calculateR6Term(double r) const {
+double SPC::calculateR6Term(double r) const {
     return std::pow(SIGMA_O / r, 6);
 }
 
-double LennardJones::calculateR12Term(double r6_term) const {
+double SPC::calculateR12Term(double r6_term) const {
     return r6_term * r6_term;
 }
 
-double LennardJones::calculateLJ(double r_ij) const {
+double SPC::calculateLJ(double r_ij) const {
     double r6_term = calculateR6Term(r_ij);
     double r12_term = calculateR12Term(r6_term);
     return EPSILON_O * (r12_term - 2 * r6_term);
 }
 
-double LennardJones::getLJEnergy() const {
+double SPC::getLJEnergy() const {
     double lj_energy = 0.0;
     for (int atom1_idx = 0; atom1_idx < A.size(); ++atom1_idx) {
         for (int atom2_idx = atom1_idx + 1; atom2_idx < A.size(); ++atom2_idx) {
@@ -45,10 +49,12 @@ double LennardJones::getLJEnergy() const {
     return lj_energy;
 }
 
-const arma::mat& LennardJones::getPositions() const {
+double 
+
+const arma::mat& SPC::getPositions() const {
     return positions;
 }
 
-const std::vector<int>& LennardJones::getAtomicNumbers() const {
+const std::vector<int>& SPC::getAtomicNumbers() const {
     return A;
 }
