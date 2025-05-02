@@ -1,3 +1,4 @@
+// spc.h
 #pragma once
 
 #include <armadillo>
@@ -13,13 +14,14 @@ private:
 public:
     // Constants
     static const double SIGMA_O; // 3.166 Å
-    static const double EPSILON_O; // 0.650 kJ/mol
-    static const double COULOMB_CONSTANT; // 332.0637 kJ·Å/(mol·e²)
+    static const double EPSILON_O; // 0.155425 kcal/mol
+    static const double COULOMB_CONSTANT; // 332.0637 kcal·Å/(mol·e²)
+    static const double POLARIZATION_ENERGY; // 1.247 kcal/mol for SPC/E model
 
     // Constructor: initialize positions, atomic numbers, and charges
     SPC(const arma::mat& pos, const std::vector<int>& a);
 
-    // SPC partial charge based on atomic number
+    // SPC/E partial charge based on atomic number
     double getPartialCharge(int atomic_number);
 
     // Compute the total LJ energy
@@ -28,7 +30,10 @@ public:
     // Compute the total Coulomb energy
     double getCoulombEnergy() const;
 
-    // Compute the total energy (LJ + Coulomb)
+    // Compute the polarization correction energy (SPC/E specific)
+    double getPolarizationEnergy() const;
+
+    // Compute the total energy (LJ + Coulomb + Polarization)
     double getTotalEnergy() const;
 
     // Getters
