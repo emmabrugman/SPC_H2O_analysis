@@ -13,10 +13,10 @@ private:
 
 public:
     // Constants
-    static const double SIGMA_O; // 3.166 Å
-    static const double EPSILON_O; // 0.155425 kcal/mol
-    static const double COULOMB_CONSTANT; // 332.0637 kcal·Å/(mol·e²)
-    static const double POLARIZATION_ENERGY; // 1.247 kcal/mol for SPC/E model
+    static const double SIGMA_O; 
+    static const double EPSILON_O; 
+    static const double COULOMB_CONSTANT; 
+    static const double POLARIZATION_ENERGY; 
 
     // Constructor: initialize positions, atomic numbers, and charges
     SPC(const arma::mat& pos, const std::vector<int>& a);

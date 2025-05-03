@@ -1,15 +1,14 @@
-// spc.cpp
 #include "spc.h"
 #include <stdexcept>
 #include <cmath>
 #include <iostream>
 
-// Constants
-const double SPC::SIGMA_O = 3.16555789; // Å
-const double SPC::EPSILON_O = 0.155213; // kcal/mol
-const double SPC::COULOMB_CONSTANT = 332.0637; // kcal·Å/(mol·e²)
-const double SPC::POLARIZATION_ENERGY = 1.247; // kcal/mol (equivalent to 5.22 kJ/mol)
-const double CUTOFF = 10.0; // Å
+// Constants in atomic units
+const double SPC::SIGMA_O = 5.982037444913; // Bohr
+const double SPC::EPSILON_O = 0.000247347607; // Hartree
+const double SPC::COULOMB_CONSTANT = 1.0; // Dimensionless in atomic units
+const double SPC::POLARIZATION_ENERGY = -0.0019872; // Hartree
+const double CUTOFF = 18.8973; // Bohr
 
 // Constructor: initialize positions and atomic numbers
 SPC::SPC(const arma::mat& pos, const std::vector<int>& a)
@@ -24,7 +23,9 @@ SPC::SPC(const arma::mat& pos, const std::vector<int>& a)
 double SPC::getPartialCharge(int atomic_number) {
     if (atomic_number == 8) return -0.8476; // Oxygen
     if (atomic_number == 1) return 0.4238;  // Hydrogen
-    throw std::runtime_error("Unknown atomic number: " + std::to_string(atomic_number));
+    else {
+        throw std::invalid_argument("Unsupported atomic number for SPC/E model");
+    }
 }
 
 // Compute Euclidean distance between two atoms
@@ -66,7 +67,7 @@ double SPC::getLJEnergy() const {
     return lj_energy;
 } 
 
-// ====== Coulomb Potential ======
+// ====== Coulomb Energy ======
 double SPC::getCoulombEnergy() const {
     double energy = 0.0;
     for (size_t i = 0; i < A.size(); ++i) {
@@ -75,24 +76,23 @@ double SPC::getCoulombEnergy() const {
             double q2 = charges[j];
             double r = calculateDistance(i, j);
             if (r > 0 && r < CUTOFF) {
-                energy += COULOMB_CONSTANT * q1 * q2 / r;
+                double contrib = q1 * q2 / r;
+                energy += contrib; // Added semicolon here
             }
         }
     }
     return energy;
 }
 
-// ====== Polarization Correction (SPC/E specific) ======
+// ====== Polarization Energy ======
 double SPC::getPolarizationEnergy() const {
-    // Count the number of water molecules
-    // For SPC/E, each O atom corresponds to one water molecule
-    int water_count = 0;
+    size_t num_oxygen = 0;
     for (size_t i = 0; i < A.size(); ++i) {
-        if (A[i] == 8) water_count++;
+        if (A[i] == 8) { // Oxygen
+            num_oxygen++;
+        }
     }
-    
-    // The polarization energy is a constant per water molecule
-    return water_count * POLARIZATION_ENERGY;
+    return num_oxygen * POLARIZATION_ENERGY; // Per water molecule
 }
 
 // ====== Total Energy =====
