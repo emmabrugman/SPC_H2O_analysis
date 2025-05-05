@@ -1,6 +1,7 @@
 #include "build_system.h"
 #include "spc.h"
 #include "forces.h"
+#include "hessian.h"
 #include <iostream>
 #include <iomanip>
 #include <string>
@@ -42,13 +43,23 @@ int main(int argc, char** argv) {
     
     std::cout << "\n======== Force Calculation ========" << std::endl;
     CalculateForce force_calculator(spc_calculator, atomic_system.getNumAtoms());
-    arma::mat central_forces, analytical_forces;
+    arma::mat central_forces;
     double h_force = 1.88972612457e-8; // 1e-8 Å converted to Bohr
     force_calculator.calculateCentralDifferenceForces(h_force, central_forces);
     
     // Output forces
     std::cout << "\nCentral Difference Forces (Hartree/Bohr):\n";
     std::cout << central_forces << std::endl;
+    
+    std::cout << "\n======== Hessian Calculation ========" << std::endl;
+    CalculateHessian hessian_calculator(spc_calculator, force_calculator, atomic_system.getNumAtoms());
+    arma::mat hessian;
+    double h_hessian = 1.88972612457e-8; // Same step size as forces for consistency
+    hessian_calculator.calculateCentralDifferenceHessian(h_hessian, hessian);
+    
+    // Output Hessian
+    std::cout << "\nNumerical Hessian (Hartree/Bohr^2):\n";
+    std::cout << hessian << std::endl;
     
     return 0;
 }
