@@ -8,7 +8,7 @@ const double SPC::SIGMA_O = 5.982037444913; // Bohr
 const double SPC::EPSILON_O = 0.000247347607; // Hartree
 const double SPC::COULOMB_CONSTANT = 1.0; // Dimensionless in atomic units
 const double SPC::POLARIZATION_ENERGY = -0.0019872; // Hartree
-const double CUTOFF = 18.8973; // Bohr
+const double SPC::CUTOFF = 18.8973; // Bohr
 
 // Constructor: initialize positions and atomic numbers
 SPC::SPC(const arma::mat& pos, const std::vector<int>& a)
@@ -17,6 +17,11 @@ SPC::SPC(const arma::mat& pos, const std::vector<int>& a)
     for (size_t i = 0; i < A.size(); ++i) {
         charges[i] = getPartialCharge(A[i]);
     }
+}
+
+// Set positions
+void SPC::setPositions(const arma::mat& newPositions) {
+    positions = newPositions;
 }
 
 // SPC/E partial charge based on atomic number
@@ -44,14 +49,13 @@ double SPC::calculateR12Term(double r6_term) const {
 }
 
 double SPC::calculateLJ(double r_ij) const {
-    double r6_term = calculateR6Term(r_ij);
-    double r12_term = calculateR12Term(r6_term);
-    return EPSILON_O * (r12_term - 2 * r6_term);
+    double r6_term = std::pow(SIGMA_O / r_ij, 6);
+    double r12_term = r6_term * r6_term;  // (σ/r)^12
+    return 4 * EPSILON_O * (r12_term - r6_term);  // Standard 12-6 LJ formula
 }
 
 double SPC::getLJEnergy() const {
     double lj_energy = 0.0;
-    int pair_count = 0;
     for (size_t atom1_idx = 0; atom1_idx < A.size(); ++atom1_idx) {
         for (size_t atom2_idx = atom1_idx + 1; atom2_idx < A.size(); ++atom2_idx) {
             if (A[atom1_idx] == 8 && A[atom2_idx] == 8) {
@@ -59,7 +63,6 @@ double SPC::getLJEnergy() const {
                 if (r_ij < CUTOFF) {
                     double lj_contrib = calculateLJ(r_ij);
                     lj_energy += lj_contrib;
-                    pair_count++;
                 }
             }
         }
@@ -77,7 +80,7 @@ double SPC::getCoulombEnergy() const {
             double r = calculateDistance(i, j);
             if (r > 0 && r < CUTOFF) {
                 double contrib = q1 * q2 / r;
-                energy += contrib; // Added semicolon here
+                energy += contrib; 
             }
         }
     }
