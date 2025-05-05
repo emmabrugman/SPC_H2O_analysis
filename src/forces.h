@@ -5,11 +5,11 @@
 
 class CalculateForce {
 private:
-    const SPC& spcPotential; // Reference to SPC potential
+    const SPC& spc_potential; // Reference to SPC potential
     int num_atoms;           // Number of atoms
 
     // Compute energy for a given displacement
-    double calculateDisplacementEnergy(const arma::mat& newPositions) const;
+    double calculateDisplacementEnergy(const arma::mat& new_positions) const;
 
     // Central difference approximation
     double calculateCentralDifferences(double forward_energy, double backward_energy, double h) const;
