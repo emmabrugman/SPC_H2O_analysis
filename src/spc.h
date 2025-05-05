@@ -1,4 +1,3 @@
-// spc.h
 #pragma once
 
 #include <armadillo>
@@ -17,6 +16,7 @@ public:
     static const double EPSILON_O; 
     static const double COULOMB_CONSTANT; 
     static const double POLARIZATION_ENERGY; 
+    static const double CUTOFF; 
 
     // Constructor: initialize positions, atomic numbers, and charges
     SPC(const arma::mat& pos, const std::vector<int>& a);
@@ -40,6 +40,9 @@ public:
     const arma::mat& getPositions() const;
     const std::vector<int>& getAtomicNumbers() const;
     const std::vector<double>& getCharges() const;
+
+    // Setter for positions (for force calculations)
+    void setPositions(const arma::mat& newPositions);
 
     // Calculates (sigma/r)^6
     double calculateR6Term(double r) const;
