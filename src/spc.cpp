@@ -4,11 +4,17 @@
 #include <iostream>
 
 // Constants in atomic units
-const double SPC::SIGMA_O = 5.982037444913; // Bohr
-const double SPC::EPSILON_O = 0.000247347607; // Hartree
+const double SPC::SIGMA_O = 5.9819129309; // Bohr
+const double SPC::EPSILON_O = 0.0002476859286; // Hartree
 const double SPC::COULOMB_CONSTANT = 1.0; // Dimensionless in atomic units
-const double SPC::POLARIZATION_ENERGY = -0.0019872; // Hartree
+
+const double SPC::KB = 0.474; // Hartree/Bohr^2
+const double SPC::KA = 0.121; // Hartree/rad^2
+const double SPC::R_OH_EQ = 1.912; // Bohr
+const double SPC::THETA_HOH_EQ = 1.976; // radians (113.24 degrees)
+
 const double SPC::CUTOFF = 18.8973; // Bohr
+
 
 // Constructor: initialize positions and atomic numbers
 SPC::SPC(const arma::mat& pos, const std::vector<int>& a)
@@ -87,20 +93,16 @@ double SPC::getCoulombEnergy() const {
     return energy;
 }
 
-// ====== Polarization Energy ======
-double SPC::getPolarizationEnergy() const {
-    size_t num_oxygen = 0;
-    for (size_t i = 0; i < A.size(); ++i) {
-        if (A[i] == 8) { // Oxygen
-            num_oxygen++;
-        }
-    }
-    return num_oxygen * POLARIZATION_ENERGY; // Per water molecule
-}
+// ====== Intra Energy ======
+// Angle Energy +  Bond Energy
+
+// ====== Inter Energy ======
+// LJ and Coulomb energy
+
 
 // ====== Total Energy =====
 double SPC::getTotalEnergy() const {
-    return getLJEnergy() + getCoulombEnergy() + getPolarizationEnergy();
+    return getLJEnergy() + getCoulombEnergy();
 }
 
 // ====== Getters =====

@@ -15,8 +15,11 @@ public:
     static const double SIGMA_O; 
     static const double EPSILON_O; 
     static const double COULOMB_CONSTANT; 
-    static const double POLARIZATION_ENERGY; 
     static const double CUTOFF; 
+    static const double KB; // Bond stretching constant (Hartree/Bohr^2)
+    static const double KA; // Angle bending constant (Hartree/rad^2)
+    static const double R_OH_EQ; // Equilibrium O-H bond length (Bohr)
+    static const double THETA_HOH_EQ; // Equilibrium H-O-H angle (radians)
 
     // Constructor: initialize positions, atomic numbers, and charges
     SPC(const arma::mat& pos, const std::vector<int>& a);
