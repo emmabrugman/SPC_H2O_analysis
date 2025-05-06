@@ -2,6 +2,7 @@
 #include "spc.h"
 #include "forces.h"
 #include "hessian.h"
+#include "vibrations.h"
 #include <iostream>
 #include <iomanip>
 #include <string>
@@ -60,6 +61,10 @@ int main(int argc, char** argv) {
     // Output Hessian
     std::cout << "\nNumerical Hessian (Hartree/Bohr^2):\n";
     std::cout << hessian << std::endl;
+
+    // Analyze vibrations
+    std::cout << "\n======== Vibrational Analysis ========" << std::endl;
+    analyze_vibrations(hessian);
     
     return 0;
 }
