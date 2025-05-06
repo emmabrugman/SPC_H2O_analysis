@@ -36,6 +36,9 @@ public:
     // Compute the polarization correction energy (SPC/E specific)
     double getPolarizationEnergy() const;
 
+    // Compute Intra Energy
+    double getBondEnergy() const;
+
     // Compute the total energy (LJ + Coulomb + Polarization)
     double getTotalEnergy() const;
 
