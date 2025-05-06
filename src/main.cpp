@@ -32,15 +32,13 @@ int main(int argc, char** argv) {
     // Compute and display energies
     double lj_energy = spc_calculator.getLJEnergy();
     double coulomb_energy = spc_calculator.getCoulombEnergy();
-    double polarization_energy = spc_calculator.getPolarizationEnergy();
     double total_energy = spc_calculator.getTotalEnergy();
 
     std::cout << std::fixed << std::setprecision(5);
     std::cout << "\n======== Initial Energy Calculations ========" << std::endl;
     std::cout << "Lennard-Jones Energy: " << lj_energy << " Hartree" << std::endl;
     std::cout << "Coulomb Energy: " << coulomb_energy << " Hartree" << std::endl;
-    std::cout << "Polarization Energy: " << polarization_energy << " Hartree" << std::endl;
-    std::cout << "Total Energy (LJ + Coulomb + Polarization): " << total_energy << " Hartree" << std::endl;
+    std::cout << "Total Energy (LJ + Coulomb): " << total_energy << " Hartree" << std::endl;
     
     std::cout << "\n======== Force Calculation ========" << std::endl;
     CalculateForce force_calculator(spc_calculator, atomic_system.getNumAtoms());
