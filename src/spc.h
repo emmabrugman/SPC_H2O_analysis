@@ -9,6 +9,10 @@ private:
     arma::mat positions; // Matrix of atomic positions
     std::vector<int> A; // Vector of atomic numbers
     std::vector<double> charges; // Vector of partial charges
+    std::vector<std::vector<int>> molecules; // Vector of molecules (each containing atom indices)
+
+    // Identify water molecules in the system
+    void identifyWaterMolecules();
 
 public:
     // Constants
@@ -36,6 +40,11 @@ public:
     // Compute the polarization correction energy (SPC/E specific)
     double getPolarizationEnergy() const;
 
+    // Compute Intra Energy
+    double getBondEnergy() const;
+
+    double getAngleEnergy() const;
+
     // Compute the total energy (LJ + Coulomb + Polarization)
     double getTotalEnergy() const;
 
@@ -43,6 +52,7 @@ public:
     const arma::mat& getPositions() const;
     const std::vector<int>& getAtomicNumbers() const;
     const std::vector<double>& getCharges() const;
+    const std::vector<std::vector<int>>& getMolecules() const;
 
     // Setter for positions (for force calculations)
     void setPositions(const arma::mat& newPositions);

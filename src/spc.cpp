@@ -15,7 +15,6 @@ const double SPC::THETA_HOH_EQ = 1.976; // radians (113.24 degrees)
 
 const double SPC::CUTOFF = 18.8973; // Bohr
 
-
 // Constructor: initialize positions and atomic numbers
 SPC::SPC(const arma::mat& pos, const std::vector<int>& a)
     : positions(pos), A(a) {
@@ -34,9 +33,7 @@ void SPC::setPositions(const arma::mat& newPositions) {
 double SPC::getPartialCharge(int atomic_number) {
     if (atomic_number == 8) return -0.8476; // Oxygen
     if (atomic_number == 1) return 0.4238;  // Hydrogen
-    else {
-        throw std::invalid_argument("Unsupported atomic number for SPC/E model");
-    }
+    throw std::invalid_argument("Unsupported atomic number for SPC/E model");
 }
 
 // Compute Euclidean distance between two atoms
@@ -74,7 +71,7 @@ double SPC::getLJEnergy() const {
         }
     }
     return lj_energy;
-} 
+}
 
 // ====== Coulomb Energy ======
 double SPC::getCoulombEnergy() const {
@@ -86,7 +83,7 @@ double SPC::getCoulombEnergy() const {
             double r = calculateDistance(i, j);
             if (r > 0 && r < CUTOFF) {
                 double contrib = q1 * q2 / r;
-                energy += contrib; 
+                energy += contrib;
             }
         }
     }
@@ -94,15 +91,86 @@ double SPC::getCoulombEnergy() const {
 }
 
 // ====== Intra Energy ======
-// Angle Energy +  Bond Energy
+// Angle Energy + Bond Energy
+
+double SPC::getAngleEnergy() const {
+    double angle_energy = 0.0;
+
+    // Find oxygen and hydrogen indices for the water molecule
+    int oxygen_idx = -1;
+    std::vector<int> hydrogen_indices;
+    for (size_t i = 0; i < A.size(); ++i) {
+        if (A[i] == 8) { // Oxygen
+            oxygen_idx = i;
+        } else if (A[i] == 1) { // Hydrogen
+            hydrogen_indices.push_back(i);
+        }
+    }
+    
+    // Get positions of oxygen and two hydrogens
+    arma::vec pos_O = positions.col(oxygen_idx);
+    arma::vec pos_H1 = positions.col(hydrogen_indices[0]);
+    arma::vec pos_H2 = positions.col(hydrogen_indices[1]);
+
+    // Compute vectors r_OH1 and r_OH2
+    arma::vec r_OH1 = pos_H1 - pos_O;
+    arma::vec r_OH2 = pos_H2 - pos_O;
+
+    // Compute magnitudes
+    double mag_OH1 = arma::norm(r_OH1, 2);
+    double mag_OH2 = arma::norm(r_OH2, 2);
+
+    // Compute cosine of the angle using dot product
+    double cos_theta = arma::dot(r_OH1, r_OH2) / (mag_OH1 * mag_OH2);
+
+    // Clamp cos_theta to [-1, 1] to avoid numerical errors
+    cos_theta = std::max(-1.0, std::min(1.0, cos_theta));
+
+    // Compute the angle in radians
+    double theta = std::acos(cos_theta);
+
+    // Compute harmonic angle energy
+    double delta_theta = theta - THETA_HOH_EQ;
+    angle_energy = 0.5 * KA * delta_theta * delta_theta;
+
+    return angle_energy;
+}
+
+double SPC::getBondEnergy() const {
+    double bond_energy = 0.0;
+
+    // 1 oxygen (Z=8), 2 hydrogens (Z=1)
+    int oxygen_idx = -1;
+    std::vector<int> hydrogen_indices;
+    for (size_t i = 0; i < A.size(); ++i) {
+        if (A[i] == 8) {
+            oxygen_idx = i;
+        } else if (A[i] == 1) {
+            hydrogen_indices.push_back(i);
+        }
+    }
+
+    // Check
+    if (oxygen_idx == -1 || hydrogen_indices.size() != 2) {
+        throw std::runtime_error("Expected one O (Z=8) and two H (Z=1) atoms.");
+    }
+
+    // Harmonic bond energy
+    for (int h_idx : hydrogen_indices) {
+        double l = calculateDistance(oxygen_idx, h_idx);  // bond length
+        double delta = l - R_OH_EQ;                      // deviation from equilibrium
+        bond_energy += 0.5 * KB * delta * delta;
+    }
+
+    return bond_energy;
+}
 
 // ====== Inter Energy ======
 // LJ and Coulomb energy
 
-
 // ====== Total Energy =====
 double SPC::getTotalEnergy() const {
-    return getLJEnergy() + getCoulombEnergy();
+    return getLJEnergy() + getCoulombEnergy() + getBondEnergy() + getAngleEnergy();
 }
 
 // ====== Getters =====
