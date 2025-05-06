@@ -77,10 +77,13 @@ double SPC::getLJEnergy() const {
 } 
 
 // ====== Coulomb Energy ======
-double SPC::getCoulombEnergy() const {
+double SPC::getCoulombEnergy() const 
+{
     double energy = 0.0;
-    for (size_t i = 0; i < A.size(); ++i) {
-        for (size_t j = i + 1; j < A.size(); ++j) {
+    for (size_t i = 0; i < A.size(); ++i) 
+    {
+        for (size_t j = i + 1; j < A.size(); ++j) 
+        {
             double q1 = charges[i];
             double q2 = charges[j];
             double r = calculateDistance(i, j);
@@ -95,6 +98,41 @@ double SPC::getCoulombEnergy() const {
 
 // ====== Intra Energy ======
 // Angle Energy +  Bond Energy
+
+double SPC::getBondEnergy() const 
+{
+    double bond_energy = 0.0;
+
+    // 1 oxygen (Z=8), 2 hydrogens (Z=1)
+    int oxygen_idx = -1;
+    std::vector<int> hydrogen_indices;
+    for (size_t i = 0; i < A.size(); i++) 
+    {
+        if (A[i] == 8) 
+        {
+            oxygen_idx = i;
+        } else if (A[i] == 1) {
+            hydrogen_indices.push_back(i);
+        }
+    }
+
+    // Check
+    if (oxygen_idx == -1 || hydrogen_indices.size() != 2) 
+    {
+        throw std::runtime_error("Expected one O (Z=8) and two H (Z=1) atoms.");
+    }
+
+    // Harmonic bond energy
+    for (int h_idx : hydrogen_indices) 
+    {
+        double l = calculateDistance(oxygen_idx, h_idx);  // bond length
+        double delta = l - R_OH_EQ;                       // deviation from equilibrium
+        bond_energy += 0.5 * KB * delta * delta;
+    }
+
+    return bond_energy;
+}
+
 
 // ====== Inter Energy ======
 // LJ and Coulomb energy
