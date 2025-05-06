@@ -12,12 +12,6 @@ static const std::vector<double> atomic_masses =
     1.008   // H
 };
 
-#include <armadillo>
-#include <vector>
-#include <cmath>
-#include <iostream>
-#include "vibrations.h"
-
 // Constants for conversion
 const double conversion = 5140.484532;
 
@@ -26,14 +20,13 @@ void analyze_vibrations(const arma::mat & hessian)
     // Calculate dimensions
     int dof = hessian.n_rows;
     int n_atoms = dof / 3;
-    
-    // For multiple water molecules, we assume they are arranged as O, H, H, O, H, H, etc.
+
     int n_molecules = n_atoms / 3;
     
     std::cout << "Analyzing vibrational modes for " << n_molecules << " water molecule(s) "
               << "(" << n_atoms << " atoms, " << dof << " degrees of freedom)" << std::endl;
 
-    // Build mass vector based on known water molecule pattern (O, H, H, O, H, H, ...)
+    // Build mass vector based on water molecule pattern 
     arma::vec masses(dof);
     for (int i = 0; i < n_atoms; i++) {
         if (i % 3 == 0) { // Oxygen (first atom in each molecule)
