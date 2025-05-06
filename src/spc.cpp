@@ -93,118 +93,87 @@ double SPC::getCoulombEnergy() const
     return energy;
 }
 
-// ====== Intra Energy ======
-// Angle Energy + Bond Energy
-
+// ====== Angle Energy ======
 double SPC::getAngleEnergy() const {
     double angle_energy = 0.0;
 
-    // Find oxygen and hydrogen indices for the water molecule
-    int oxygen_idx = -1;
-    std::vector<int> hydrogen_indices;
-    for (size_t i = 0; i < A.size(); ++i) {
-        if (A[i] == 8) { // Oxygen
-            oxygen_idx = i;
-        } else if (A[i] == 1) { // Hydrogen
-            hydrogen_indices.push_back(i);
-        }
-    }
+    // Number of water molecules
+    int num_molecules = A.size() / 3;
     
-    // Get positions of oxygen and two hydrogens
-    arma::vec pos_O = positions.col(oxygen_idx);
-    arma::vec pos_H1 = positions.col(hydrogen_indices[0]);
-    arma::vec pos_H2 = positions.col(hydrogen_indices[1]);
+    // Process each molecule
+    for (int mol = 0; mol < num_molecules; ++mol) {
+        // Get atom indices for this molecule
+        int oxygen_idx = mol * 3;       // First atom in the molecule
+        int h1_idx = mol * 3 + 1;       // Second atom in the molecule
+        int h2_idx = mol * 3 + 2;       // Third atom in the molecule
+        
+        // Get positions of oxygen and two hydrogens
+        arma::vec pos_O = positions.col(oxygen_idx);
+        arma::vec pos_H1 = positions.col(h1_idx);
+        arma::vec pos_H2 = positions.col(h2_idx);
 
-    // Compute vectors r_OH1 and r_OH2
-    arma::vec r_OH1 = pos_H1 - pos_O;
-    arma::vec r_OH2 = pos_H2 - pos_O;
+        // Compute vectors r_OH1 and r_OH2
+        arma::vec r_OH1 = pos_H1 - pos_O;
+        arma::vec r_OH2 = pos_H2 - pos_O;
 
-    // Compute magnitudes
-    double mag_OH1 = arma::norm(r_OH1, 2);
-    double mag_OH2 = arma::norm(r_OH2, 2);
+        // Compute magnitudes
+        double mag_OH1 = arma::norm(r_OH1, 2);
+        double mag_OH2 = arma::norm(r_OH2, 2);
 
-    // Compute cosine of the angle using dot product
-    double cos_theta = arma::dot(r_OH1, r_OH2) / (mag_OH1 * mag_OH2);
+        // Compute cosine of the angle using dot product
+        double cos_theta = arma::dot(r_OH1, r_OH2) / (mag_OH1 * mag_OH2);
 
-    // Clamp cos_theta to [-1, 1] to avoid numerical errors
-    cos_theta = std::max(-1.0, std::min(1.0, cos_theta));
+        // Clamp cos_theta to [-1, 1] to avoid numerical errors
+        cos_theta = std::max(-1.0, std::min(1.0, cos_theta));
 
-    // Compute the angle in radians
-    double theta = std::acos(cos_theta);
+        // Compute the angle in radians
+        double theta = std::acos(cos_theta);
 
-    // Compute harmonic angle energy
-    double delta_theta = theta - THETA_HOH_EQ;
-    angle_energy = 0.5 * KA * delta_theta * delta_theta;
+        // Compute harmonic angle energy for this molecule
+        double delta_theta = theta - THETA_HOH_EQ;
+        angle_energy += 0.5 * KA * delta_theta * delta_theta;
+    }
 
     return angle_energy;
 }
 
+// ====== Bond Energy ======
 double SPC::getBondEnergy() const {
     double bond_energy = 0.0;
 
-    // 1 oxygen (Z=8), 2 hydrogens (Z=1)
-    int oxygen_idx = -1;
-    std::vector<int> hydrogen_indices;
-    for (size_t i = 0; i < A.size(); ++i) {
-        if (A[i] == 8) {
-            oxygen_idx = i;
-        } else if (A[i] == 1) {
-            hydrogen_indices.push_back(i);
+    // Check if the number of atoms is divisible by 3
+    if (A.size() % 3 != 0) {
+        throw std::runtime_error("Expected the number of atoms to be divisible by 3 (O, H, H pattern).");
+    }
+
+    // Number of water molecules
+    int num_molecules = A.size() / 3;
+    
+    // Process each molecule
+    for (int mol = 0; mol < num_molecules; ++mol) {
+        // Get atom indices for this molecule
+        int oxygen_idx = mol * 3;       // First atom in the molecule
+        int h1_idx = mol * 3 + 1;       // Second atom in the molecule
+        int h2_idx = mol * 3 + 2;       // Third atom in the molecule
+        
+        // Verify that we have O-H-H pattern
+        if (A[oxygen_idx] != 8 || A[h1_idx] != 1 || A[h2_idx] != 1) {
+            throw std::runtime_error("Expected O-H-H pattern for each water molecule.");
         }
-    }
-
-    // Check
-    if (oxygen_idx == -1 || hydrogen_indices.size() != 2) {
-        throw std::runtime_error("Expected one O (Z=8) and two H (Z=1) atoms.");
-    }
-
-    // Harmonic bond energy
-    for (int h_idx : hydrogen_indices) {
-        double l = calculateDistance(oxygen_idx, h_idx);  // bond length
-        double delta = l - R_OH_EQ;                      // deviation from equilibrium
-        bond_energy += 0.5 * KB * delta * delta;
+        
+        // Calculate bond energy for O-H1 bond
+        double l1 = calculateDistance(oxygen_idx, h1_idx);
+        double delta1 = l1 - R_OH_EQ;
+        bond_energy += 0.5 * KB * delta1 * delta1;
+        
+        // Calculate bond energy for O-H2 bond
+        double l2 = calculateDistance(oxygen_idx, h2_idx);
+        double delta2 = l2 - R_OH_EQ;
+        bond_energy += 0.5 * KB * delta2 * delta2;
     }
 
     return bond_energy;
 }
-
-double SPC::getBondEnergy() const 
-{
-    double bond_energy = 0.0;
-
-    // 1 oxygen (Z=8), 2 hydrogens (Z=1)
-    int oxygen_idx = -1;
-    std::vector<int> hydrogen_indices;
-    for (size_t i = 0; i < A.size(); i++) 
-    {
-        if (A[i] == 8) 
-        {
-            oxygen_idx = i;
-        } else if (A[i] == 1) {
-            hydrogen_indices.push_back(i);
-        }
-    }
-
-    // Check
-    if (oxygen_idx == -1 || hydrogen_indices.size() != 2) 
-    {
-        throw std::runtime_error("Expected one O (Z=8) and two H (Z=1) atoms.");
-    }
-
-    // Harmonic bond energy
-    for (int h_idx : hydrogen_indices) 
-    {
-        double l = calculateDistance(oxygen_idx, h_idx);  // bond length
-        double delta = l - R_OH_EQ;                       // deviation from equilibrium
-        bond_energy += 0.5 * KB * delta * delta;
-    }
-
-    return bond_energy;
-}
-
-
-// ====== Inter Energy ======
-// LJ and Coulomb energy
 
 // ====== Total Energy =====
 double SPC::getTotalEnergy() const {
