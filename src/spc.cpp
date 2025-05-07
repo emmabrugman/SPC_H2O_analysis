@@ -9,7 +9,7 @@ const double SPC::EPSILON_O = 0.0002476859286; // Hartree
 const double SPC::COULOMB_CONSTANT = 1.0; // Dimensionless in atomic units
 
 const double SPC::KB = 0.474; // Hartree/Bohr^2
-const double SPC::KA = 0.121; // Hartree/rad^2
+const double SPC::KA = 0.145; // Hartree/rad^2
 const double SPC::R_OH_EQ = 1.912; // Bohr
 const double SPC::THETA_HOH_EQ = 1.976; // radians (113.24 degrees)
 
