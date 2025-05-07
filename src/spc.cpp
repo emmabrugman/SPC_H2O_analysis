@@ -77,14 +77,22 @@ double SPC::getLJEnergy() const {
 double SPC::getCoulombEnergy() const 
 {
     double energy = 0.0;
-    for (size_t i = 0; i < A.size(); ++i) 
+    for (size_t i = 0; i < A.size(); i++) 
     {
-        for (size_t j = i + 1; j < A.size(); ++j) 
+        for (size_t j = i + 1; j < A.size(); j++) 
         {
+            // molecule number for each atom
+            int mol_i = i / 3;
+            int mol_j = j / 3;
+
+            // Skip intramolecular interactions
+            if (mol_i == mol_j) continue;
+
             double q1 = charges[i];
             double q2 = charges[j];
             double r = calculateDistance(i, j);
-            if (r > 0 && r < CUTOFF) {
+            if (r > 0 && r < CUTOFF) 
+            {
                 double contrib = q1 * q2 / r;
                 energy += contrib;
             }
@@ -92,6 +100,7 @@ double SPC::getCoulombEnergy() const
     }
     return energy;
 }
+
 
 // ====== Angle Energy ======
 double SPC::getAngleEnergy() const {
