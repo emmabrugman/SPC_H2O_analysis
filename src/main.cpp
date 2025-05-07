@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
     std::cout << "\n======== Force Calculation ========" << std::endl;
     CalculateForce force_calculator(spc_calculator, atomic_system.getNumAtoms());
     arma::mat central_forces;
-    double h_force = 0.0188973; // 0.01 Å in Bohr
+    double h_force = 0.00377946; // 0.01 Å in Bohr
     force_calculator.calculateCentralDifferenceForces(h_force, central_forces);
     
     // Output forces
@@ -63,7 +63,7 @@ int main(int argc, char** argv) {
     std::cout << "\n======== Hessian Calculation ========" << std::endl;
     CalculateHessian hessian_calculator(spc_calculator, force_calculator, atomic_system.getNumAtoms());
     arma::mat hessian;
-    double h_hessian = 0.0188973; // Same step size as forces for consistency
+    double h_hessian = 0.00755892;// Same step size as forces for consistency
     hessian_calculator.calculateCentralDifferenceHessian(h_hessian, hessian);
     
     // Output Hessian
