@@ -31,7 +31,7 @@ This study presents a computational vibrational analysis of water molecules usin
     ├── h2o_HBOND2-2A.txt # Sample water molecule geometry for 3 molecules 2.2 A apart
     ├── h2o_3.txt         # Sample water molecule geometry for 3 molecules 3 A apart
     ├── h2o_5.txt         # Sample water molecule geometry for 5 molecules 3 A apart
-    ├── h2o_10.txt         # Sample water molecule geometry for 10 molecules 3 A apart
+    ├── h2o_10.txt        # Sample water molecule geometry for 10 molecules 3 A apart
 │   └── H2O.txt           # Sample water molecule geometry for single molecule
 ├── interactive.sh        # Script to launch Docker container
 ├── README.md             # This file
