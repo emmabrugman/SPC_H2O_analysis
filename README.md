@@ -16,7 +16,7 @@ This study presents a computational vibrational analysis of water molecules usin
 
 2. Check out the appropriate branch:
    - For SPC/E model: `git checkout spc/e`
-   - For SPC/Fw model: `git checkout spc/fw`
+   - For SPC/Fw model: `git checkout main`
 
 ### SPC/FW Version
 
