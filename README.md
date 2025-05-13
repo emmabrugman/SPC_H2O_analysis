@@ -4,7 +4,7 @@ This repository contains the final project paper and slides, as well as the supp
 
 ## Paper Abstract
 
-This study presents a computational vibrational analysis of water molecules using Single Point Charge (SPC) force field model variants (SPC/E and SPC/Fw). We developed a C++ program to simulate the atomic system of a water molecule, compute intramolecular and intermolecular energies, and derive forces and the Hessian matrix via central difference approximations. Vibrational modes were obtained by diagonalizing the mass-weighted Hessian, yielding frequencies in wavenumber.
+This study presents a computational vibrational analysis of water molecules using Simple Point Charge (SPC) force field model variants (SPC/E and SPC/FW). We developed a C++ program to simulate the atomic system of a water molecule, compute intramolecular and intermolecular energies, and derive forces to calculate the Hessian matrix via central difference approximations. Vibrational modes were obtained by diagonalizing the mass-weighted Hessian, yielding wavelength frequencies. 
 
 ## Getting Started
 
